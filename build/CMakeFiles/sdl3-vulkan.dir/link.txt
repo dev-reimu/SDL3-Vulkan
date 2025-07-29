@@ -1,1 +1,0 @@
-/usr/bin/cc -Wl,--dependency-file=CMakeFiles/sdl3-vulkan.dir/link.d "CMakeFiles/sdl3-vulkan.dir/src/main.c.o" -o sdl3-vulkan  -Wl,-rpath,/home/reimu/SDL3-Vulkan/build libSDL3.so.0.3.0
