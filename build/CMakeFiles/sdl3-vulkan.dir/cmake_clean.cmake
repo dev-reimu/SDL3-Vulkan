@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sdl3-vulkan.dir/link.d"
-  "CMakeFiles/sdl3-vulkan.dir/main.c.o"
-  "CMakeFiles/sdl3-vulkan.dir/main.c.o.d"
+  "CMakeFiles/sdl3-vulkan.dir/src/main.c.o"
+  "CMakeFiles/sdl3-vulkan.dir/src/main.c.o.d"
   "sdl3-vulkan"
   "sdl3-vulkan.pdb"
 )

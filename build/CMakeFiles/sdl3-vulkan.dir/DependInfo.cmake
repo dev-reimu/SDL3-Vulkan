@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/reimu/SDL3-Vulkan/main.c" "CMakeFiles/sdl3-vulkan.dir/main.c.o" "gcc" "CMakeFiles/sdl3-vulkan.dir/main.c.o.d"
+  "/home/reimu/SDL3-Vulkan/src/main.c" "CMakeFiles/sdl3-vulkan.dir/src/main.c.o" "gcc" "CMakeFiles/sdl3-vulkan.dir/src/main.c.o.d"
   "" "sdl3-vulkan" "gcc" "CMakeFiles/sdl3-vulkan.dir/link.d"
   )
 

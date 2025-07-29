@@ -168,29 +168,29 @@ SDL_uclibc/fast:
 	$(MAKE) $(MAKESILENT) -f vendored/SDL/CMakeFiles/SDL_uclibc.dir/build.make vendored/SDL/CMakeFiles/SDL_uclibc.dir/build
 .PHONY : SDL_uclibc/fast
 
-main.o: main.c.o
-.PHONY : main.o
+src/main.o: src/main.c.o
+.PHONY : src/main.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdl3-vulkan.dir/build.make CMakeFiles/sdl3-vulkan.dir/main.c.o
-.PHONY : main.c.o
+src/main.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdl3-vulkan.dir/build.make CMakeFiles/sdl3-vulkan.dir/src/main.c.o
+.PHONY : src/main.c.o
 
-main.i: main.c.i
-.PHONY : main.i
+src/main.i: src/main.c.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdl3-vulkan.dir/build.make CMakeFiles/sdl3-vulkan.dir/main.c.i
-.PHONY : main.c.i
+src/main.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdl3-vulkan.dir/build.make CMakeFiles/sdl3-vulkan.dir/src/main.c.i
+.PHONY : src/main.c.i
 
-main.s: main.c.s
-.PHONY : main.s
+src/main.s: src/main.c.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdl3-vulkan.dir/build.make CMakeFiles/sdl3-vulkan.dir/main.c.s
-.PHONY : main.c.s
+src/main.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdl3-vulkan.dir/build.make CMakeFiles/sdl3-vulkan.dir/src/main.c.s
+.PHONY : src/main.c.s
 
 # Help Target
 help:
@@ -204,9 +204,9 @@ help:
 	@echo "... SDL3_test"
 	@echo "... SDL_uclibc"
 	@echo "... sdl3-vulkan"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 
