@@ -30,20 +30,20 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("Found primary display with ID %d.", display_id);
 
     int display_modes_count;
-    SDL_DisplayMode **display_modes = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count);
+    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
     if (display_modes_count <= 0) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes: %s\n.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_Log("Found %d display modes.\n", display_modes_count);
-    SDL_Log("Proceeding with the first one: %dx%d@%f.", display_modes[0]->w, display_modes[0]->h, display_modes[0]->refresh_rate);
+    SDL_Log("Proceeding with the first one: %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
 
-    window = SDL_CreateWindow("SDL3-Vulkan Window", display_modes[0]->w, display_modes[0]->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
+    window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_Log("Created borderless fullscreen window with resolution %dx%d@%f.", display_modes[0]->w, display_modes[0]->h, display_modes[0]->refresh_rate);
+    SDL_Log("Created borderless fullscreen window with resolution %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
     
     if (SDL_SetWindowFullscreen(window, true) == false) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not convert window to exclusive fullscreen: %s\n.", SDL_GetError());
