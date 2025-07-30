@@ -3,16 +3,17 @@
 #include <vulkan/vulkan.h>
 
 #define SDL_MAIN_USE_CALLBACKS
-#define SDL_WINDOW_ALLOW_HIGHDPI
+#define SDL_WINDOW_ALLOW_HIGHDPI_renamed_SDL_WINDOW_HIGH_PIXEL_DENSITY
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL_vulkan.h>
+#include <vulkan/vulkan.h>
 
 SDL_Window *window;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
 
-    // Program skips all code after SDL_INIT_VIDEO. I don't know how to fix this. Damn software.
     if (SDL_Init(SDL_INIT_VIDEO) == false) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s\n.", SDL_GetError());
         return 1;
@@ -38,7 +39,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n.", SDL_GetError());
         return 1;
     }
-    SDL_Log("Created exclusive fullscreen window with resolution %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
+    SDL_Log("Created borderless fullscreen window with resolution %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
+
+    int *new_width, *new_height;
+    if (SDL_SetWindowFullscreen(window, true) == false &&
+        SDL_GetWindowSize(window, new_width, new_height) == false) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not convert window to exclusive fullscreen: %s\n.", SDL_GetError());
+        return 1;
+    }
+    SDL_Log("Converted window to exclusive fullscreen mode with new resolution of %dx%d.", new_width, new_height);
 
     return 0;
 }
