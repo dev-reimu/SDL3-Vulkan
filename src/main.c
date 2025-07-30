@@ -14,9 +14,15 @@ SDL_Window *window;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
 
-    // Initialize SDL
-    SDL_SetHint("SDL_VIDEO_DRIVER", "wayland"); // TODO: ONLY SELECT WAYLAND IF THE USER IS RUNNING WAYLAND
+    // Linux specific -> Select X11 or Wayland
+    const char* platform_name = SDL_GetPlatform();
+    SDL_Log("Detected platform %s.", platform_name);
+    if (SDL_strcmp(platform_name, "Linux") == 0) {
+        SDL_SetHint("SDL_VIDEO_DRIVER", "wayland");
+        SDL_Log("Use Wayland.");
+    }
 
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) == false) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s\n.", SDL_GetError());
         return SDL_APP_FAILURE;
