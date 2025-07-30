@@ -33,7 +33,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
     SDL_Log("Found primary display properties.");
 
-    window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
+    window = SDL_CreateWindow("SDL3-Vulkan Window", 2880, 1800, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n.", SDL_GetError());
         return 1;
