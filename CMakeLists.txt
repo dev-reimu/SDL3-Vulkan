@@ -6,11 +6,11 @@ project(sdl3-vulkan)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-# This assumes the SDL source is available in SDL (original documentation comes in vendored/SDL)
 add_subdirectory(SDL EXCLUDE_FROM_ALL)
+find_package(Vulkan REQUIRED)
 
-# Create your game executable target as usual
 add_executable(sdl3-vulkan src/main.c)
 
-# Link to the actual SDL3 library.
 target_link_libraries(sdl3-vulkan PRIVATE SDL3::SDL3)
+target_include_directories(sdl3-vulkan PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(sdl3-vulkan PRIVATE ${Vulkan_LIBRARIES})
