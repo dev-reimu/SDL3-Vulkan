@@ -17,7 +17,7 @@ SDL_Window *window;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     printf("SDL_AppInit\n");
 
-    if (SDL_Init(SDL_INIT_VIDEO) == 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) == false) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s\n", SDL_GetError());
         return 1;
     }
