@@ -35,26 +35,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
         return SDL_APP_FAILURE;
     }
     SDL_Log("Initialized SDL video.");
-
-    // Find all displays
-    int display_count;
-    SDL_DisplayID *all_display_ids = SDL_GetDisplays(&display_count);
-    if (display_count == 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not find all displays: %s.", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-
-    // Find highest resolution and refresh rate for every found display
-    for (int i = 0; i < display_count; i++) {
-        int display_modes_count;
-        SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(all_display_ids[i], &display_modes_count)[0];
-        if (display_modes_count <= 0) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", all_display_ids[i], SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
-        SDL_Log("Found display with ID %d with %d display modes. Highest settings found: %dx%d@%f", all_display_ids[i], display_modes_count, display_mode->w, display_mode->h, display_mode->refresh_rate);
-    }
-
+    
     // Get primary display
     SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
     if (primary_display_id == 0) {
