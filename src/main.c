@@ -18,13 +18,20 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     const char* platform_name = SDL_GetPlatform();
     SDL_Log("Detected platform %s.", platform_name);
     if (SDL_strcmp(platform_name, "Linux") == 0) {
-        SDL_SetHint("SDL_VIDEO_DRIVER", "wayland");
-        SDL_Log("Use Wayland.");
+        SDL_Environment *env = SDL_GetEnvironment();
+        if (SDL_GetEnvironmentVariable(env, "WAYLAND_DISPLAY")) {
+            SDL_SetHint("SDL_VIDEO_DRIVER", "wayland");
+            SDL_Log("Use Wayland.");
+        }
+        else if (SDL_GetEnvironmentVariable(env, "DISPLAY")) {
+            SDL_SetHint("SDL_VIDEO_DRIVER", "x11");
+            SDL_Log("Use X11.");
+        }
     }
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) == false) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s\n.", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_Log("Initialized SDL video.");
@@ -32,7 +39,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // Find primary display
     SDL_DisplayID display_id = SDL_GetPrimaryDisplay();
     if (display_id == 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s\n.", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_Log("Found primary display with ID %d.", display_id);
@@ -41,7 +48,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     int display_modes_count;
     SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
     if (display_modes_count <= 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes: %s\n.", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_Log("Found %d display modes.\n", display_modes_count);
@@ -50,14 +57,14 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // Create window
     window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n.", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_Log("Created borderless fullscreen window with resolution %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
     
     // Convert window to Fullscreen Exclusive
     if (SDL_SetWindowFullscreen(window, true) == false) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not convert window to exclusive fullscreen: %s\n.", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not convert window to exclusive fullscreen: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_Log("Converted window to exclusive fullscreen mode.");
@@ -66,7 +73,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
-    //SDL_Log("SDL_AppIterate\n");
+    //SDL_Log("SDL_AppIterate");
 
     // Wayland requires a constant update loop for a window to show, 
     // so SDL_CreateWindow() does nothing on its own.
@@ -76,13 +83,13 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 }
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-    //SDL_Log("SDL_AppEvent\n");
+    //SDL_Log("SDL_AppEvent");
 
     return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-    SDL_Log("SDL_AppQuit\n");
+    SDL_Log("SDL_AppQuit");
     
     SDL_DestroyWindow(window);
     
