@@ -91,9 +91,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     SDL_DisplayID current_display_id = SDL_GetDisplayForWindow(window);
     int display_modes_count;
-    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(current_display_id[i], &display_modes_count)[0];
+    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(current_display_id, &display_modes_count)[0];
     if (display_modes_count <= 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", all_display_ids[i], SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", current_display_id, SDL_GetError());
         return SDL_APP_FAILURE;
     }
     SDL_SetWindowSize(window, display_mode->w, display_mode->h);
