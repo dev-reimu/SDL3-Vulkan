@@ -36,31 +36,45 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
     SDL_Log("Initialized SDL video.");
 
-    // Find primary display
-    SDL_DisplayID display_id = SDL_GetPrimaryDisplay();
-    if (display_id == 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s.", SDL_GetError());
+    // Find all displays
+    int display_count;
+    SDL_DisplayID *all_display_ids = SDL_GetDisplays(&display_count);
+    if (display_count == 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not find all displays: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_Log("Found primary display with ID %d.", display_id);
 
-    // Find highest resolution and refresh rate
-    int display_modes_count;
-    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
-    if (display_modes_count <= 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes: %s.", SDL_GetError());
+    // Find highest resolution and refresh rate for every found display
+    for (int i = 0; i < display_count; i++) {
+        int display_modes_count;
+        SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(all_display_ids[i], &display_modes_count)[0];
+        if (display_modes_count <= 0) {
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", all_display_ids[i], SDL_GetError());
+            return SDL_APP_FAILURE;
+        }
+        SDL_Log("Found display with ID %d with %d display modes. Highest settings found: %dx%d@%f", all_display_ids[i], display_modes_count, display_mode->w, display_mode->h, display_mode->refresh_rate);
+    }
+
+    // Get primary display
+    SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
+    if (primary_display_id == 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s.", SDL_GetError());
+    }    
+    int primary_display_modes_count;
+    SDL_DisplayMode *primary_display_mode = SDL_GetFullscreenDisplayModes(primary_display_id, &primary_display_modes_count)[0];
+    if (primary_display_modes_count <= 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", primary_display_id, SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_Log("Found %d display modes.\n", display_modes_count);
-    SDL_Log("Proceeding with the first one: %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
+    SDL_Log("Found primary display with ID %d and %d display modes. Picking %dx%d@%f.", primary_display_id, primary_display_modes_count, primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
 
     // Create window
-    window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
+    window = SDL_CreateWindow("SDL3-Vulkan Window", primary_display_mode->w, primary_display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s.", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_Log("Created borderless fullscreen window with resolution %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
+    SDL_Log("Created borderless fullscreen window with primary display properties.");
     
     // Convert window to Fullscreen Exclusive
     if (SDL_SetWindowFullscreen(window, true) == false) {
@@ -74,6 +88,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
     //SDL_Log("SDL_AppIterate");
+
+    SDL_DisplayID current_display_id = SDL_GetDisplayForWindow(window);
+    int display_modes_count;
+    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(current_display_id[i], &display_modes_count)[0];
+    if (display_modes_count <= 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", all_display_ids[i], SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+    SDL_SetWindowSize(window, display_mode->w, display_mode->h);
 
     // Wayland requires a constant update loop for a window to show, 
     // so SDL_CreateWindow() does nothing on its own.
