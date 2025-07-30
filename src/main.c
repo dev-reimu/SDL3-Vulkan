@@ -14,7 +14,8 @@ SDL_Window *window;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
 
-    SDL_SetHint("SDL_VIDEO_DRIVER", "wayland");
+    // Initialize SDL
+    SDL_SetHint("SDL_VIDEO_DRIVER", "wayland"); // TODO: ONLY SELECT WAYLAND IF THE USER IS RUNNING WAYLAND
 
     if (SDL_Init(SDL_INIT_VIDEO) == false) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s\n.", SDL_GetError());
@@ -22,6 +23,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
     SDL_Log("Initialized SDL video.");
 
+    // Find primary display
     SDL_DisplayID display_id = SDL_GetPrimaryDisplay();
     if (display_id == 0) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s\n.", SDL_GetError());
@@ -29,6 +31,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
     SDL_Log("Found primary display with ID %d.", display_id);
 
+    // Find highest resolution and refresh rate
     int display_modes_count;
     SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
     if (display_modes_count <= 0) {
@@ -38,6 +41,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("Found %d display modes.\n", display_modes_count);
     SDL_Log("Proceeding with the first one: %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
 
+    // Create window
     window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n.", SDL_GetError());
@@ -45,6 +49,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
     SDL_Log("Created borderless fullscreen window with resolution %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
     
+    // Convert window to Fullscreen Exclusive
     if (SDL_SetWindowFullscreen(window, true) == false) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not convert window to exclusive fullscreen: %s\n.", SDL_GetError());
         return SDL_APP_FAILURE;
