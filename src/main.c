@@ -11,6 +11,7 @@
 
 SDL_Window *window;
 SDL_DisplayID current_display_id;
+SDL_DisplayMode *current_display_mode;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
@@ -38,17 +39,19 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("Initialized SDL video.");
     
     // Get primary display
-    current_display_id = SDL_GetPrimaryDisplay();
-    if (current_display_id == 0) {
+    SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
+    if (primary_display_id == 0) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s.", SDL_GetError());
     }    
     int primary_display_modes_count;
-    SDL_DisplayMode *primary_display_mode = SDL_GetFullscreenDisplayModes(current_display_id, &primary_display_modes_count)[0];
+    SDL_DisplayMode *primary_display_mode = SDL_GetFullscreenDisplayModes(primary_display_id, &primary_display_modes_count)[0];
     if (primary_display_modes_count <= 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", current_display_id, SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", primary_display_id, SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    SDL_Log("Found primary display with ID %d and %d display modes. Picking %dx%d@%f.", current_display_id, primary_display_modes_count, primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
+    SDL_Log("Found primary display with ID %d and %d display modes. Picking %dx%d@%f.", primary_display_id, primary_display_modes_count, primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
+    current_display_id = primary_display_id;
+    current_display_mode = primary_display_mode;
 
     // Create window
     window = SDL_CreateWindow("SDL3-Vulkan Window", primary_display_mode->w, primary_display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
@@ -71,18 +74,18 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     //SDL_Log("SDL_AppIterate");
 
+    // Check if display properties change or if window is moved to another display
     SDL_DisplayID potentially_new_display_id = SDL_GetDisplayForWindow(window);
-    if (current_display_id != potentially_new_display_id) {
+    SDL_DisplayMode *potentially_new_display_mode = SDL_GetFullscreenDisplayModes(potentially_new_display_id, NULL)[0];
+    if (current_display_mode->w != potentially_new_display_mode->w || 
+        current_display_mode->h != potentially_new_display_mode->h || 
+        current_display_mode->pixel_density != potentially_new_display_mode->pixel_density || 
+        current_display_mode->refresh_rate != potentially_new_display_mode->refresh_rate) {
+            
         SDL_Log("Detected new display.");
-        int new_display_modes_count;
-        SDL_DisplayMode *new_display_mode = SDL_GetFullscreenDisplayModes(potentially_new_display_id, &new_display_modes_count)[0];
-        if (new_display_modes_count <= 0) {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from new display with ID %d: %s.", potentially_new_display_id, SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
-        SDL_SetWindowSize(window, new_display_mode->w, new_display_mode->h);
-        SDL_Log("Switching from previous display %d's properties to the new %d's properties: %dx%d@%f", current_display_id, potentially_new_display_id, new_display_mode->w, new_display_mode->h, new_display_mode->refresh_rate);
-        current_display_id = potentially_new_display_id;
+        SDL_SetWindowSize(window, potentially_new_display_mode->w, potentially_new_display_mode->h);
+        SDL_Log("Switched from previous display %d's properties to the new %d's properties: %dx%d@%f", current_display_id, potentially_new_display_id, potentially_new_display_mode->w, potentially_new_display_mode->h, potentially_new_display_mode->refresh_rate);
+        current_display_mode = potentially_new_display_mode;
     }
 
     // Wayland requires a constant update loop for a window to show, 
