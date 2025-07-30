@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #define SDL_MAIN_USE_CALLBACKS
+#define SDL_WINDOW_ALLOW_HIGHDPI
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -23,7 +24,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s\n.", SDL_GetError());
         return 1;
     }
-    SDL_Log("Found primary display with ID %d", display_id);
+    SDL_Log("Found primary display with ID %d.", display_id);
 
     const SDL_DisplayMode *display_mode = SDL_GetCurrentDisplayMode(display_id);
     if (display_mode == NULL) {
@@ -32,7 +33,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
     SDL_Log("Found primary display properties.");
 
-    window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
+    window = SDL_CreateWindow("SDL3-Vulkan Window", display_mode->w, display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n.", SDL_GetError());
         return 1;
