@@ -13,27 +13,6 @@
 
 extern SDL_Window *window;
 
-SDL_DisplayMode* Get_Display_Mode_From_Id(SDL_DisplayID display_id) {
-    int display_modes_count;
-    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
-    if (display_modes_count <= 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", display_id, SDL_GetError());
-        SDL_AppQuit(NULL, SDL_APP_FAILURE);
-    }
-    return display_mode;
-}
-
-bool Change_Window_Display_Mode(SDL_Window *window, SDL_DisplayMode *display_mode) {
-    //SDL_SetWindowSize(window, display_mode->w, display_mode->h);
-    if (SDL_SetWindowFullscreenMode(window, display_mode) == false) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not set new display mode: %s.", SDL_GetError());
-        return false;
-    }
-    SDL_SyncWindow(window);
-    SDL_Log("Changed window to new display mode: %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
-    return true;
-}
-
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
 
