@@ -1,1 +1,0 @@
-void CheckSDLError(void *appstate, char *potential_error_message);
