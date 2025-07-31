@@ -47,7 +47,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Reimu_CheckError("Failed to get display modes from primary display.");
     SDL_Log("Successfully found %d display modes: ", primary_display_modes_count);
     for (int i = 0; i < primary_display_modes_count; i++) {
-        SDL_Log("%dx%d@%d", primary_display_mode[i]->w, primary_display_mode[i]->h, (int)primary_display_mode[i]->refresh_rate);
+        SDL_Log("%d. %dx%d@%d", i, primary_display_mode[i]->w, primary_display_mode[i]->h, (int)primary_display_mode[i]->refresh_rate);
     }
 
     // Create window
