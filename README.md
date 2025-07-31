@@ -16,7 +16,7 @@ The function signed with my name has the purpose of abstracting error handling. 
 ---
 # Building
 ### Windows
-- Install a C/C++ compiler
+- Install a C/C++ compiler (Recommended: [GCC](https://winlibs.com/#download-release))
 - [Download and install CMake](https://cmake.org/download/)
 - Open a terminal in the project folder and run the provided build scripts, or make your own.
 ### MacOS
