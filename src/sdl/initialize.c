@@ -8,10 +8,34 @@
 
 #include <vulkan/vulkan.h>
 
+#include <string.h>
+
 #include "../headers/reimu-sdl-extensions.h"
 #include "../headers/global_variables.h"
 
 extern SDL_Window *window;
+
+char output[2048];
+
+void strcat_string_with_int(char *str, int i) {
+    int i_copy = i;
+    int int_length = 0;
+    while (i_copy != 0) {
+        i_copy /= 10;
+        int_length++;
+    }
+
+    char extended_str[strlen(str)+int_length];
+    strcpy(extended_str, str);
+    SDL_Log("str = %s", str);
+
+    char int_buffer[int_length];
+    SDL_itoa(i, int_buffer, 10);
+
+    char *result = strcat(extended_str, int_buffer);
+
+    strcat(output, result);
+}
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
@@ -37,7 +61,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     
     // Find primary display
     SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
-    SDL_Reimu_CheckError("Successfully found primary display with ID {primary_display_id}", 
+    strcat_string_with_int("Successfully found primary display with ID ", primary_display_id);
+    SDL_Reimu_CheckError(output, 
                         "Failed to find primary display");
 
     // Get primary display properties
