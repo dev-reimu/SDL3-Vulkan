@@ -17,7 +17,7 @@ extern SDL_Window *window;
 
 char output[2048];
 
-char *fmt_int(char *str, int i) {
+void strcat_string_with_int(char *str, int i) {
     int i_copy = i;
     int int_length = 0;
     while (i_copy != 0) {
@@ -32,10 +32,9 @@ char *fmt_int(char *str, int i) {
     char int_buffer[int_length];
     SDL_itoa(i, int_buffer, 10);
 
-    char *result = (char*)SDL_malloc(sizeof(str)+sizeof(int_buffer)); 
-    strcat(extended_str, int_buffer);
+    char *result = strcat(extended_str, int_buffer);
 
-    return result;
+    strcat(output, result);
 }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
@@ -62,7 +61,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     
     // Find primary display
     SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
-    SDL_Reimu_CheckError(fmt_int("Successfully found primary display with ID ", primary_display_id), 
+    strcat_string_with_int("Successfully found primary display with ID ", primary_display_id);
+    SDL_Reimu_CheckError(output, 
                         "Failed to find primary display");
 
     // Get primary display properties
