@@ -14,9 +14,12 @@ Throughout this project, you will encounter the function `SDL_*Reimu*_CheckError
 ---
 # Building
 ### Windows
-(Coming soon)
+- Install a C/C++ compiler
+- [Download and install CMake](https://cmake.org/download/)
+- Open a terminal in the project folder and run the provided build scripts, or make your own.
 ### MacOS
 (Coming soon)
 ### Linux
-Packages required:
-`gcc cmake`
+- Install a C/C++ compiler package (Recommended: `gcc`);
+- Install CMake package: `cmake`
+- Open a terminal in the project folder and run the provided build scripts (`sh build.sh`, `sh run.sh`, `sh build-and-run.sh`), or make your own.
