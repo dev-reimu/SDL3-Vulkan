@@ -9,6 +9,27 @@
 #include <SDL3/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 
+SDL_DisplayMode* Get_Display_Mode_From_Id(SDL_DisplayID display_id) {
+    int display_modes_count;
+    SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
+    if (display_modes_count <= 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", display_id, SDL_GetError());
+        SDL_AppQuit(NULL, SDL_APP_FAILURE);
+    }
+    return display_mode;
+}
+
+bool Change_Window_Display_Mode(SDL_Window *window, SDL_DisplayMode *display_mode) {
+    //SDL_SetWindowSize(window, display_mode->w, display_mode->h);
+    if (SDL_SetWindowFullscreenMode(window, display_mode) == false) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not set new display mode: %s.", SDL_GetError());
+        return false;
+    }
+    SDL_SyncWindow(window);
+    SDL_Log("Changed window to new display mode: %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
+    return true;
+}
+
 SDL_Window *window;
 SDL_DisplayID current_display_id;
 SDL_DisplayMode *current_display_mode;
@@ -74,20 +95,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     //SDL_Log("SDL_AppIterate");
 
-    // Check if display properties change or if window is moved to another display
-    SDL_DisplayID potentially_new_display_id = SDL_GetDisplayForWindow(window);
-    SDL_DisplayMode *potentially_new_display_mode = SDL_GetFullscreenDisplayModes(potentially_new_display_id, NULL)[0];
-    if (current_display_mode->w != potentially_new_display_mode->w || 
-        current_display_mode->h != potentially_new_display_mode->h || 
-        current_display_mode->pixel_density != potentially_new_display_mode->pixel_density || 
-        current_display_mode->refresh_rate != potentially_new_display_mode->refresh_rate) {
-            
-        SDL_Log("Detected new display.");
-        SDL_SetWindowSize(window, potentially_new_display_mode->w, potentially_new_display_mode->h);
-        SDL_Log("Switched from previous display %d's properties to the new %d's properties: %dx%d@%f", current_display_id, potentially_new_display_id, potentially_new_display_mode->w, potentially_new_display_mode->h, potentially_new_display_mode->refresh_rate);
-        current_display_mode = potentially_new_display_mode;
-    }
-
     // Wayland requires a constant update loop for a window to show, 
     // so SDL_CreateWindow() does nothing on its own.
     // https://github.com/libsdl-org/SDL/issues/6074
@@ -97,6 +104,20 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     //SDL_Log("SDL_AppEvent");
+
+    switch (event->type)
+    {
+        case SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED:
+            SDL_Log("SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED");
+            SDL_DisplayMode *new_display_mode = Get_Display_Mode_From_Id(event->display.displayID);
+            if (Change_Window_Display_Mode(window, new_display_mode) == false) {
+                return SDL_APP_FAILURE;
+            }
+            break;
+        
+        default:
+            break;
+    }
 
     return SDL_APP_CONTINUE;
 }
