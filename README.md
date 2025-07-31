@@ -16,4 +16,5 @@ Throughout the project, you will encounter the function `SDL_*Reimu*_CheckError(
 ### MacOS
 (Coming soon)
 ### Linux
-(Coming soon)
+Packages required:
+`gcc cmake`
