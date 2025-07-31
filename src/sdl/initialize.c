@@ -54,20 +54,20 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Reimu_CheckError(appstate, "Could not initialize SDL video");
+    SDL_Reimu_CheckError("Could not initialize SDL video");
     SDL_Log("Initialized SDL video.");
     
     // Get primary display
     SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
-    SDL_Reimu_CheckError(appstate, "Could not get primary display");   
+    SDL_Reimu_CheckError("Could not get primary display");   
     int primary_display_modes_count;
     SDL_DisplayMode *primary_display_mode = SDL_GetFullscreenDisplayModes(primary_display_id, &primary_display_modes_count)[0];
-    SDL_Reimu_CheckError(appstate, "Could not get display modes from primary display");
+    SDL_Reimu_CheckError("Could not get display modes from primary display");
     SDL_Log("Found primary display with %d display modes.", primary_display_modes_count);
 
     // Create window
     window = SDL_CreateWindow("SDL3-Vulkan Window", primary_display_mode->w, primary_display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
-    SDL_Reimu_CheckError(appstate, "Could not create window");
+    SDL_Reimu_CheckError("Could not create window");
     SDL_Log("Created window: %dx%d@%f.", primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
 
     return SDL_APP_CONTINUE;
