@@ -4,9 +4,14 @@
 #define SDL_WINDOW_ALLOW_HIGHDPI_renamed_SDL_WINDOW_HIGH_PIXEL_DENSITY
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include "headers/reimus-sdl-extensions.h"
 #include <SDL3/SDL_vulkan.h>
+
 #include <vulkan/vulkan.h>
+
+#include "../headers/reimus-sdl-extensions.h"
+#include "../headers/global_variables.h"
+
+extern SDL_Window *window;
 
 SDL_DisplayMode* Get_Display_Mode_From_Id(SDL_DisplayID display_id) {
     int display_modes_count;
@@ -28,8 +33,6 @@ bool Change_Window_Display_Mode(SDL_Window *window, SDL_DisplayMode *display_mod
     SDL_Log("Changed window to new display mode: %dx%d@%f.", display_mode->w, display_mode->h, display_mode->refresh_rate);
     return true;
 }
-
-SDL_Window *window;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
@@ -68,40 +71,4 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("Created window: %dx%d@%f.", primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
 
     return SDL_APP_CONTINUE;
-}
-
-SDL_AppResult SDL_AppIterate(void *appstate) {
-    //SDL_Log("SDL_AppIterate");
-
-    // Wayland requires a constant update loop for a window to show, 
-    // so SDL_CreateWindow() does nothing on its own.
-    // https://github.com/libsdl-org/SDL/issues/6074
-
-    return SDL_APP_CONTINUE;
-}
-
-SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-    //SDL_Log("SDL_AppEvent");
-
-    switch (event->type)
-    {
-        case SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED:
-            SDL_Log("SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED");
-            SDL_DisplayMode *new_display_mode = Get_Display_Mode_From_Id(event->display.displayID);
-            CheckSDLError(appstate, "Could not change to new display mode");
-            break;
-        
-        default:
-            break;
-    }
-
-    return SDL_APP_CONTINUE;
-}
-
-void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-    SDL_Log("SDL_AppQuit");
-    
-    SDL_DestroyWindow(window);
-    
-    return;
 }

@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.16)
 project(sdl3-vulkan)
 
 # Executable and include header files
-add_executable(${CMAKE_PROJECT_NAME} src/main.c src/reimus-sdl-extensions.c src/headers/reimus-sdl-extensions.h)
+add_executable(${CMAKE_PROJECT_NAME}    src/sdl/initialize.c src/sdl/iterate.c src/sdl/event.c src/sdl/quit.c
+                                        src/global_variables.c src/headers/global_variables.h
+                                        src/reimus-sdl-extensions.c src/headers/reimus-sdl-extensions.h)
 
 # Include SDL
 add_subdirectory(SDL EXCLUDE_FROM_ALL)
