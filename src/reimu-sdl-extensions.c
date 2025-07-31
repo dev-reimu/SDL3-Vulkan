@@ -4,7 +4,7 @@
 void SDL_Reimu_CheckError(char *potential_error_message) {
     const char* sdl_error = SDL_GetError();
     if (*sdl_error != '\0') {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s. SDL error: %s.", potential_error_message, sdl_error);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s\nSDL error: %s.", potential_error_message, sdl_error);
         SDL_Quit();
     }
 }

@@ -33,24 +33,27 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Reimu_CheckError("Failed to initialize SDL video");
+    SDL_Reimu_CheckError("Failed to initialize SDL video.");
     SDL_Log("Successfully initialized SDL video.");
     
     // Find primary display
     SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
-    SDL_Reimu_CheckError("Failed to find primary display");
-    SDL_Log("Successfully found primary display with ID %d", primary_display_id);
+    SDL_Reimu_CheckError("Failed to find primary display.");
+    SDL_Log("Successfully found primary display with ID %d.", primary_display_id);
 
     // Get display modes from primary display
     int primary_display_modes_count;
-    SDL_DisplayMode *primary_display_mode = SDL_GetFullscreenDisplayModes(primary_display_id, &primary_display_modes_count)[0];
-    SDL_Reimu_CheckError("Failed to get display modes from primary display");
-    SDL_Log("Successfully found %d display modes in primary display with ID %d.", primary_display_modes_count, primary_display_id);
+    SDL_DisplayMode **primary_display_mode = SDL_GetFullscreenDisplayModes(primary_display_id, &primary_display_modes_count);
+    SDL_Reimu_CheckError("Failed to get display modes from primary display.");
+    SDL_Log("Successfully found %d display modes: ", primary_display_modes_count);
+    for (int i = 0; i < primary_display_modes_count; i++) {
+        SDL_Log("%dx%d@%d", primary_display_mode[i]->w, primary_display_mode[i]->h, (int)primary_display_mode[i]->refresh_rate);
+    }
 
     // Create window
-    window = SDL_CreateWindow("SDL3-Vulkan Window", primary_display_mode->w, primary_display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
-    SDL_Reimu_CheckError("Failed to create window");
-    SDL_Log("Successfully created window: %dx%d@%d.", primary_display_mode->w, primary_display_mode->h, (int)primary_display_mode->refresh_rate);
+    window = SDL_CreateWindow("SDL3-Vulkan Window", primary_display_mode[0]->w, primary_display_mode[0]->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
+    SDL_Reimu_CheckError("Failed to create window.");
+    SDL_Log("Successfully created window: %dx%d@%d.", primary_display_mode[0]->w, primary_display_mode[0]->h, (int)primary_display_mode[0]->refresh_rate);
 
     return SDL_APP_CONTINUE;
 }
