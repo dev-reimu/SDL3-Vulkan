@@ -1,1 +1,1 @@
-void SDL_Reimu_CheckError(void *appstate, char *potential_error_message);
+void SDL_Reimu_CheckError(char* success_message, char *error_message);
