@@ -1,22 +1,12 @@
 // https://wiki.libsdl.org/SDL3/README-main-functions
 
-#include <vulkan/vulkan.h>
-
 #define SDL_MAIN_USE_CALLBACKS
 #define SDL_WINDOW_ALLOW_HIGHDPI_renamed_SDL_WINDOW_HIGH_PIXEL_DENSITY
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include "headers/reimus-sdl-extensions.h"
 #include <SDL3/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
-
-// https://www.studyplan.dev/sdl2/sdl2-error-handling
-void CheckSDLError(void *appstate, char *potential_error_message) {
-    const char* sdl_error = SDL_GetError();
-    if (*sdl_error != '\0') {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s. SDL error: %s.", potential_error_message, sdl_error);
-        SDL_AppQuit(appstate, SDL_APP_FAILURE);
-    }
-}
 
 SDL_DisplayMode* Get_Display_Mode_From_Id(SDL_DisplayID display_id) {
     int display_modes_count;
