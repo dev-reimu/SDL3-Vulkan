@@ -22,6 +22,6 @@ The function signed with my name has the purpose of abstracting error handling. 
 ### MacOS
 (Coming when I get a Mac or when someone else builds this project for it out of frustration because I couldn't bother to do it myself.)
 ### Linux
-- Install a C/C++ compiler package (Recommended: `gcc`);
+- Install a C/C++ compiler package (Recommended: `gcc`)
 - Install CMake package: `cmake`
 - Open a terminal in the project folder and run the provided build scripts (`sh build.sh`, `sh run.sh`, `sh build-and-run.sh`), or make your own.
