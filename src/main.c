@@ -9,6 +9,14 @@
 #include <SDL3/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 
+void CheckSDLError(void *appstate, char *potential_error_message) {
+    const char* sdl_error = SDL_GetError();
+    if (*sdl_error != '\0') {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s. SDL error: %s.", potential_error_message, sdl_error);
+        SDL_AppQuit(appstate, SDL_APP_FAILURE);
+    }
+}
+
 SDL_DisplayMode* Get_Display_Mode_From_Id(SDL_DisplayID display_id) {
     int display_modes_count;
     SDL_DisplayMode *display_mode = SDL_GetFullscreenDisplayModes(display_id, &display_modes_count)[0];
@@ -31,8 +39,6 @@ bool Change_Window_Display_Mode(SDL_Window *window, SDL_DisplayMode *display_mod
 }
 
 SDL_Window *window;
-SDL_DisplayID current_display_id;
-SDL_DisplayMode *current_display_mode;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("SDL_AppInit\n");
@@ -53,41 +59,22 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     }
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) == false) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL video: %s.", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+    SDL_Init(SDL_INIT_VIDEO);
+    CheckSDLError(appstate, "Could not initialize SDL video");
     SDL_Log("Initialized SDL video.");
     
     // Get primary display
     SDL_DisplayID primary_display_id = SDL_GetPrimaryDisplay();
-    if (primary_display_id == 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get primary display: %s.", SDL_GetError());
-    }    
+    CheckSDLError(appstate, "Could not get primary display");   
     int primary_display_modes_count;
     SDL_DisplayMode *primary_display_mode = SDL_GetFullscreenDisplayModes(primary_display_id, &primary_display_modes_count)[0];
-    if (primary_display_modes_count <= 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not get display modes from display with ID %d: %s.", primary_display_id, SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-    SDL_Log("Found primary display with ID %d and %d display modes. Picking %dx%d@%f.", primary_display_id, primary_display_modes_count, primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
-    current_display_id = primary_display_id;
-    current_display_mode = primary_display_mode;
+    CheckSDLError(appstate, "Could not get display modes from primary display");
+    SDL_Log("Found primary display with %d display modes.", primary_display_modes_count);
 
     // Create window
     window = SDL_CreateWindow("SDL3-Vulkan Window", primary_display_mode->w, primary_display_mode->h, SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN | SDL_WINDOW_FULLSCREEN);
-    if (window == NULL) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s.", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-    SDL_Log("Created borderless fullscreen window with primary display properties.");
-    
-    // Convert window to Fullscreen Exclusive
-    if (SDL_SetWindowFullscreen(window, true) == false) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not convert window to exclusive fullscreen: %s.", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-    SDL_Log("Converted window to exclusive fullscreen mode.");
+    CheckSDLError(appstate, "Could not create window");
+    SDL_Log("Created window: %dx%d@%f.", primary_display_mode->w, primary_display_mode->h, primary_display_mode->refresh_rate);
 
     return SDL_APP_CONTINUE;
 }
@@ -110,9 +97,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED:
             SDL_Log("SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED");
             SDL_DisplayMode *new_display_mode = Get_Display_Mode_From_Id(event->display.displayID);
-            if (Change_Window_Display_Mode(window, new_display_mode) == false) {
-                return SDL_APP_FAILURE;
-            }
+            CheckSDLError(appstate, "Could not change to new display mode");
             break;
         
         default:
