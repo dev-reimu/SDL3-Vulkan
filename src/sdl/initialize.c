@@ -31,7 +31,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
         }
     }
 
-    // Initialize SDL
+    // Initialize SDL Video
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Reimu_CheckError("Failed to initialize SDL video.");
     SDL_Log("Successfully initialized SDL video.");
