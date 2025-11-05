@@ -1,7 +1,5 @@
 # What is this project?
-A robust and efficient SDL3 program that ties in with the Vulkan rendering API, written in the C language.
-
-It aims to support multiple platforms and environments, while boasting a simple structure and being easy to understand.
+***-A MAJOR WORK-IN-PROGRESS-*** that aims to be an efficient SDL3 program that ties in with the Vulkan rendering API, written in the C language, all while boasting an architecture/framework that's quick and simple to understand.
 
 ---
 # How does it work?
